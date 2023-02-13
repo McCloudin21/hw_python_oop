@@ -1,11 +1,11 @@
 class InfoMessage:
     """Информационное сообщение о тренировке."""
     def __init__(self,
-                 training_type,
-                 duration,
-                 distance,
-                 speed,
-                 calories):
+                 training_type: tuple,
+                 duration: float,
+                 distance: float,
+                 speed: float,
+                 calories: float):
         self.training_type = training_type
         self.duration = duration
         self.distance = distance
@@ -61,35 +61,21 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    RUN_1_KONST = 18
-    RUN_2_KONST = 1.79
-
-    def __init__(self,
-                 action: int,
-                 duration: float,
-                 weight: float
-                 ):
-        super().__init__(action, duration, weight)
-
-    def get_distance(self) -> float:
-        return super().get_distance()
+    CALORIES_MEAN_SPEED_MULTIPLIER = 18
+    CALORIES_MEAN_SPEED_SHIFT = 1.79
 
     def get_spent_calories(self):
-
-        return ((self.RUN_1_KONST * self.get_mean_speed()
-                + self.RUN_2_KONST) * self.weight / self.M_IN_KM
+        return ((self.CALORIES_MEAN_SPEED_MULTIPLIER * self.get_mean_speed()
+                + self.CALORIES_MEAN_SPEED_SHIFT) * self.weight / self.M_IN_KM
                 * (self.duration * self.M_IN_HR))
-
-    def get_trainig_type(self):
-        return super().get_trainig_type()
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    WLK_1_KONST = 0.035
-    WLK_2_KONST = 0.029
-    WLK_3_KONST = 0.278
-    WLK_4_KONST = 100
+    CALORIES_WEIGHT_MULTIPLIER = 0.035
+    CALORIES_SPEED_HEIGHT_MULTIPLIER = 0.029
+    SEC_IN_MIN = 0.278
+    HEIGHT_IN_METERS = 100
 
     def __init__(self,
                  action: int,
@@ -101,17 +87,17 @@ class SportsWalking(Training):
 
     def get_spent_calories(self):
 
-        return ((self.WLK_1_KONST * self.weight
-                + ((self.get_mean_speed() * self.WLK_3_KONST)**2
-                 / (self.height / self.WLK_4_KONST))
-                * self.WLK_2_KONST * self.weight)
+        return ((self.CALORIES_WEIGHT_MULTIPLIER * self.weight
+                + ((self.get_mean_speed() * self.SEC_IN_MIN)**2
+                 / (self.height / self.HEIGHT_IN_METERS))
+                * self.CALORIES_SPEED_HEIGHT_MULTIPLIER * self.weight)
                 * (self.duration * self.M_IN_HR))
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
-    SWM_1_KONST = 1.1
-    SWM_2_KONST = 2
+    SWM_SPEED_MULTIPLIER = 1.1
+    SWM_SPEED_SHIFT = 2
     LEN_STEP = 1.38
 
     def __init__(self,
@@ -126,18 +112,15 @@ class Swimming(Training):
         self.count_pool = count_pool
 
     def get_distance(self):
-
         return self.action * self.LEN_STEP / self.M_IN_KM
 
     def get_mean_speed(self):
-
         return (self.length_pool * self.count_pool / self.M_IN_KM
                 / self.duration)
 
     def get_spent_calories(self):
-
-        return ((self.get_mean_speed() + self.SWM_1_KONST)
-                * self.SWM_2_KONST * self.weight * self.duration)
+        return ((self.get_mean_speed() + self.SWM_SPEED_MULTIPLIER)
+                * self.SWM_SPEED_SHIFT * self.weight * self.duration)
 
 
 def read_package(workout_type: str, data: list) -> Training:
