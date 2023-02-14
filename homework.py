@@ -20,9 +20,9 @@ class InfoMessage:
 
 class Training:
     """Базовый класс тренировки."""
-    M_IN_KM = 1000
-    LEN_STEP = 0.65
-    M_IN_HR = 60
+    M_IN_KM: int = 1000  # Meters per kilometer
+    LEN_STEP: float = 0.65  # Step Length
+    M_IN_HR: int = 60  # Minutes per hour
 
     def __init__(self,
                  action: int,
@@ -43,7 +43,9 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError("Подклассы должны реализовать это!")
+        raise NotImplementedError(f'{self.get_spent_calories.__name__}'
+                                  f'должен быть определен у '
+                                  f'{self.__class__.__name__}!')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -59,8 +61,8 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    CALORIES_MEAN_SPEED_MULTIPLIER = 18
-    CALORIES_MEAN_SPEED_SHIFT = 1.79
+    CALORIES_MEAN_SPEED_MULTIPLIER: int = 18
+    CALORIES_MEAN_SPEED_SHIFT: float = 1.79
 
     def get_spent_calories(self) -> float:
         return ((self.CALORIES_MEAN_SPEED_MULTIPLIER * self.get_mean_speed()
@@ -70,10 +72,10 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    CALORIES_WEIGHT_MULTIPLIER = 0.035
-    CALORIES_SPEED_HEIGHT_MULTIPLIER = 0.029
-    SEC_IN_MIN = 0.278
-    HEIGHT_IN_METERS = 100
+    CALORIES_WEIGHT_MULTIPLIER: float = 0.035
+    CALORIES_SPEED_HEIGHT_MULTIPLIER: float = 0.029
+    SEC_IN_MIN: float = 0.278  # Seconds per minute
+    HEIGHT_IN_METERS: float = 100
 
     def __init__(self,
                  action: int,
@@ -94,9 +96,9 @@ class SportsWalking(Training):
 
 class Swimming(Training):
     """Тренировка: плавание."""
-    SWM_SPEED_MULTIPLIER = 1.1
-    SWM_SPEED_SHIFT = 2
-    LEN_STEP = 1.38
+    SWM_SPEED_MULTIPLIER: float = 1.1
+    SWM_SPEED_SHIFT: int = 2
+    LEN_STEP: float = 1.38  # Step Length
 
     def __init__(self,
                  action: int,
@@ -121,13 +123,16 @@ class Swimming(Training):
                 * self.SWM_SPEED_SHIFT * self.weight * self.duration)
 
 
-def read_package(workout_type: str, data: dict) -> Training:
+def read_package(workout_type: str, data: list[float]) -> type[Training]:
     """Прочитать данные полученные от датчиков."""
-    classes = {'RUN': Running,
-               'WLK': SportsWalking,
-               'SWM': Swimming}
+    classes: dict[str, object] = {'RUN': Running,
+                                  'WLK': SportsWalking,
+                                  'SWM': Swimming}
 
-    return classes[workout_type](*data)
+    class_type = None
+    for class_type in classes:
+        if workout_type == class_type:
+            return classes[workout_type](*data)
 
 
 def main(training: Training) -> None:
