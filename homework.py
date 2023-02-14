@@ -126,14 +126,14 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: List[float]) -> Type[Training]:
     """Прочитать данные полученные от датчиков."""
-    classes: Dict[str, object] = {'RUN': Running,
-                                  'WLK': SportsWalking,
-                                  'SWM': Swimming}
-
-    class_type = None
-    for class_type in classes:
-        if workout_type == class_type:
-            return classes[workout_type](*data)
+    classes: Dict[str, data: Type[Training]] = {'RUN': Running,
+                                                'WLK': SportsWalking,
+                                                'SWM': Swimming}
+    if workout_type in classes:
+        return classes[workout_type](*data)
+    else:
+        raise NotImplementedError(f'{workout_type} такой вид тренировки не '
+                                  f'поддерживается фитнес-трекером')
 
 
 def main(training: Training) -> None:
